@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="/js/openseadragon/openseadragon.min.js"></script>
+  <title>OpenCCTVDragon</title>
+</head>
+<body>
+  <a href="/control-room" target="_blank" class="camera"><img src="/images/cctv-outline.svg" alt="" /></a>
+  <div id="osd-viewer">
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var ping;
+      var images = [
+        'http://nationalmuseumse.iiifhosting.com/iiif/d4ab48da35d4d9328c6db392213a94ab0cc427dced566b984bc704ec2bd6ccbc/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/2ba312829a8ddb2f946d928e1169136c7ffa037be8d22319641d0a6da04f25be/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/e4a4a4e0da7933c8589f6f30bcd9a82ffdf1dc44f342ae2172f2c2755e0516ce/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/1ce61a8c202cd9961a50b89926117b8fe06b2b39d2ec55a64573c8935db11e56/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/552000575c21b73b33f319f3bf380065a799f0a4a845509cdd1bd1c3cd83ff94/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/4552dd76c5b7c08beac0e69a738b84b8a77187f7bab387c76ed0dcfdf294fbc2/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/4488ceddbc20ad0504393387809baebb58eac14bd0f7103d52e575f957413840/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/69f28ae6487fc1ab4667582454d3dbb5276deb717467a731ce0055f4edc20937/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/9d27b4fe85f09207a2f1dbeb1e1b5fd2d77134ec44dd5b6e53a0e2fd8087f359/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/72e8b829b914380362ce1d4583f4bb587fdda3480f9fda91bc563ae4ea6d8de5/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/eee535c0422b5fe3d8737ca54a6adfd47f54856dc2064027093bd7f370e45647/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/6672540fd16b6609781c4cdf47462f4e4e370e049b4f2126779521f97c30b2db/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/ff48dee3ff6e698f96694b57a828439ccf70c85b738fbd7eaaff76ed5e3bf516/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/664a98b3cb2fff2b878fc7e59913736dd7df3954011c4780933b38815baf8e24/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/df7398b563a3130f8e3fa5ad44d25aa6d0f60df8ba7dcef915356846b9209239/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/f3e0b8e0544c99586d8032b07c0a939160b27af4ddd249042f9f05bef8041a23/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/128b743bdf25caa969268ca4697ac5ce3b8a6fb1a84b4a654bcef57244217e92/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/84b1231792746eb3821780dd69afbe9ee57231fa17d72304e1b41d6b3c85308a/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/e236d1554a8b3d0f065ceb1eb3dfeaa94bd127c795bfffa1ac0bbdc0aa9a5d36/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/32b7c1d190353fb25f2ef51e8a575ad739e1e5024e16525ba701ad6f5eeae985/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/990d33e5663952f7b0f16ad2a217ae3035f1dd33d10a680d01ec876f336683e/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/d16288db5e67a1f1af76553a5eb8b1ea304ae97d18e221f20c7a6e05c4dbc134/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/e70b7594be4b0d96e5b33f85629973f4a385c348caaa2cc4e0eb4a90fbe73653/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/3c53e5c604168abc2245a6abaa25df0400641f4b0bd169543d6b90bd46b9a129/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/3da02c4a653948dd15326fad88965299276c5e343552f62d7f2a99c846aced19/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/a5ee3b5d46364328ebb864087f6d220f889b32f745b24b8bc21b4c730e6155a/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/da11abbace6624e171c956532d73a030b179bba35638929d9b5e8dde673485e0/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/dd7fdcf8292bce47cf4bff41452bab6f86a19e0e8c4eeb66a47ee934a0828344/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/7c6bc7c4233a1be3547c43ced816ddba0417dee5a69f90444005b344c274caa8/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/9f7aa9e773bc0b57de1c8ff487e05a391136b16bb4e7fc55ad45da7ecbf5bf3b/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/bdcd6760ed2f70c6f33090f84c0c8d8c4364b113191580f52994432e06d867e9/info.json',
+        'http://nationalmuseumse.iiifhosting.com/iiif/2160dd23b624d1cbf06f250c6ca5922a40940244b63ad90022a0dbdf585b7efd/info.json'
+      ];
+
+      // Pick a random image
+      var image = Math.floor(Math.random() * images.length);
+
+      // Make a viewer
+      viewer = OpenSeadragon({
+        id: 'osd-viewer',
+        prefixUrl: '/js/openseadragon/images/',
+        tileSources: images[image],
+        minZoomLevel: 1,
+        defaultZoomLevel: 1,
+        sequenceMode: true,
+        visibilityRatio: 0.5,
+        showNavigationControl: false,
+        showZoomControl: false,
+        showSequenceControl: false,
+        showRotationControl: false,
+        showFullPageControl: false,
+        zoomPerScroll: 1.05
+      });
+
+      // Establish connection over websockets
+      var loc = window.location;
+      window.ws = new WebSocket('ws://' + loc.host + '/ws' + loc.pathname);
+
+      ws.onopen = function() {
+
+        sendPosition();
+
+        // Send the info.json and position
+        viewer.addHandler('animation', function() {
+          sendPosition();
+          clearInterval(ping);
+          ping = null;
+        });
+
+        viewer.addHandler('animation-finish', function() {
+          sendPosition();
+        });
+
+        viewer.addHandler('open', function() {
+          sendPosition();
+          pingServer();
+        });
+
+        // Ping the server to keep the connection alive
+        function pingServer() {
+          ping = setInterval(function() {
+            sendPosition();
+          }, 20000);
+        }
+      };
+
+      // Handle connection closure
+      ws.onclose = function(e) {
+        clearInterval(ping);
+        ping = 0;
+        console.warn(e.reason);
+      };
+
+      ws.onmessage = function(e) {
+        if (e.data === 'update') {
+          sendPosition();
+        }
+      };
+
+      function sendPosition() {
+        var center = viewer.viewport.getCenter();
+        var zoom = viewer.viewport.getZoom();
+        ws.send(JSON.stringify({type: 'position', info: images[image], payload: {center, zoom}}));
+      }
+
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="/js/openseadragon/openseadragon.min.js"></script>
+  <title>OpenCCTVDragon</title>
+</head>
+<body>
+  <div class="node-container">
+    <div id="screen-1" class="node node--bg-1"></div>
+    <div id="screen-2" class="node node--bg-2"></div>
+    <div id="screen-3" class="node node--bg-3"></div>
+
+    <div id="screen-4" class="node node--bg-4"></div>
+    <div id="screen-5" class="node node--bg-1"></div>
+    <div id="screen-6" class="node node--bg-2"></div>
+
+    <div id="screen-7" class="node node--bg-3"></div>
+    <div id="screen-8" class="node node--bg-4"></div>
+    <div id="screen-9" class="node node--bg-2"></div>
+  </div>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var ping;
+      var gestureSettings = {
+        scrollToZoom: false,
+        clickToZoom: false,
+        dblClickToZoom: false,
+        pinchToZoom: false,
+        pinchRotate: false,
+        flickEnabled: false
+      };
+      var viewerConfig = {
+        prefixUrl: '/vendor/openseadragon/images/',
+        minZoomLevel: 1,
+        defaultZoomLevel: 1,
+        panHorizontal: false,
+        panVertical: false,
+        visibilityRatio: 0.5,
+        gestureSettingsMouse: gestureSettings,
+        gestureSettingsTouch: gestureSettings,
+        gestureSettingsPen: gestureSettings,
+        gestureSettingsUnknown: gestureSettings,
+        zoomPerClick: 1,
+        zoomPerScroll: 1,
+        showNavigationControl: false,
+        showZoomControl: false,
+        showSequenceControl: false,
+        showRotationControl: false,
+        showFullPageControl: false,
+        immediateRender: true
+      };
+
+      window.screens = [];
+
+      for (var i = 1; i < 10; i++) {
+        viewerConfig.id = 'screen-' + i;
+        screens.push(OpenSeadragon(viewerConfig));
+
+        // Open WS after all screens configured
+        if (i === 9) {
+          openWS();
+        }
+      }
+
+      // Establish connection over websockets
+      function openWS() {
+        var loc = window.location;
+        window.ws = new WebSocket('ws://' + loc.host + '/ws' + loc.pathname);
+
+        ws.onopen = function() {
+          // Ping the server to keep the connection alive
+          ping = setInterval(function() {
+            ws.send(JSON.stringify({type: 'control ping', payload: 'control pong'}));
+          }, 20000);
+        };
+
+        ws.onmessage = function(data) {
+          // First of all get screen
+          data = JSON.parse(data.data);
+          var screen = window.screens[data.screen-1];
+
+          // Is it active? open info.json
+          if (!screen.live) {
+            screen.open(data.info);
+            // Need to updat position after inital load event
+            screen.addHandler('open', function() {
+              updateScreenPosition(data, true);
+            });
+            screen.live = true;
+            screen.element.classList.add('node--live');
+          }
+
+          if (data.type === 'position') {
+            updateScreenPosition(data);
+          }
+
+          if (data.type === 'disconnection') {
+            window.screens[data.screen-1].live = false;
+            screen.element.classList.remove('node--live');
+            window.screens[data.screen-1].close();
+          }
+        };
+
+        // Handle connection closure
+        ws.onclose = function(e) {
+          clearInterval(ping);
+          ping = 0;
+          console.warn(e.reason);
+        };
+      }
+
+      function updateScreenPosition(data, immediate) {
+        var screen = screens[data.screen-1];
+        immediate = immediate || false;
+        screen.viewport.zoomTo(data.payload.zoom, data.payload.center, immediate);
+        screen.viewport.panTo(data.payload.center, immediate);
+      }
+
+    });
+
+  </script>
+</body>
+</html>
