@@ -2,6 +2,44 @@
 
 In a nutshell; this was a fun experiment to 'spy' on users with WebSockets and [OpenSeadragon](https://github.com/openseadragon/openseadragon/). You can read more about the project in the [blog post I wrote](https://blog.cogapp.com/), or try a live demonstration on [http://opencctvdragon.cogapp.com/](http://opencctvdragon.cogapp.com/)
 
+```
+                  +-------------------+
+           +----->+  Screens [1 - 9]  +-------+
+           |      +-------------------+       |
+  Occupy   |                                  |   Viewed by
+           |                                  |
+           |                                  |
+           |                                  v
+ +---------+----------+             +---------+---------+
+ |                    |             |                   |
+ |                    |             |                   |
+ |      Cameras       |             |  Control Room(s)  |
+ |                    |             |                   |
+ |                    |             |                   |
+ +---------+----------+             +---------+---------+
+           ^                                  |
+           |                                  |
+   Data    |                                  |   Data
+           |                                  v
++----------+----------------------------------+----------+
+|                                                        |
+|                                                        |
+|                    WebSocket Server                    |
+|                                                        |
+|                                                        |
++---+---+---+--------------------------------+---+---+---+
+    ^   ^   ^                                |   |   |
+    |   |   |                                |   |   |
+    |   |   |                                |   |   |
+    |   |   |                                |   |   |
+    |   |   |                                v   v   v
++---+---+---+---+                        +---+---+---+---+
+|               |                        |               |
+|    Clients    |                        |    Clients    |
+|               |                        |               |
++---------------+                        +---------------+
+```
+
 ## Running this project locally
 
 This was developed with [node 8.x](https://nodejs.org/en/) in mind.
