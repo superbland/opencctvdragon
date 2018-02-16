@@ -1,6 +1,6 @@
 # OpenCCTVdragon
 
-In a nutshell; this was a fun experiment to 'spy' on users with WebSockets and [OpenSeadragon](https://github.com/openseadragon/openseadragon/). You can read more about the project in the [blog post I wrote](https://blog.cogapp.com/), or try a live demonstration on [http://opencctvdragon.cogapp.com/](http://opencctvdragon.cogapp.com/)
+In a nutshell; this was a fun experiment to 'spy' on users with WebSockets and [OpenSeadragon](https://github.com/openseadragon/openseadragon/). You can read more about the project in the [blog post I wrote](https://blog.cogapp.com/opencctvdragon-realtime-digital-surveillance-for-fun-41abc7fe9dc4), or try a live demonstration on [http://opencctvdragon.cogapp.com/](http://opencctvdragon.cogapp.com/)
 
 ```
                   +-------------------+
